@@ -10,11 +10,11 @@ UDepthCamSensor::UDepthCamSensor(const FObjectInitializer& ObjectInitializer) :
 	bIgnoreTransparentObjects = false;
 }
 
-void UDepthCamSensor::InitTextureTarget(int FilmWidth, int FilmHeight)
+void UDepthCamSensor::InitTextureTarget(int _FilmWidth, int _FilmHeight)
 {
 	EPixelFormat PixelFormat = EPixelFormat::PF_FloatRGBA;
 	bool bUseLinearGamma = true;
- 	TextureTarget->InitCustomFormat(FilmWidth, FilmHeight, EPixelFormat::PF_FloatRGBA, bUseLinearGamma);
+ 	TextureTarget->InitCustomFormat(_FilmWidth, _FilmHeight, EPixelFormat::PF_FloatRGBA, bUseLinearGamma);
 }
 
 void UDepthCamSensor::CaptureDepth(TArray<float>& DepthData, int& Width, int& Height)

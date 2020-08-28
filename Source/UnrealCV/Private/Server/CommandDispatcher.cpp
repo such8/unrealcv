@@ -1,9 +1,5 @@
-<<<<<<< HEAD:Source/UnrealCV/Private/CommandDispatcher.cpp
-#include "UnrealCVPrivate.h"
-#include "Internationalization/Regex.h"
-=======
 // Weichao Qiu @ 2016
->>>>>>> origin/4.25:Source/UnrealCV/Private/Server/CommandDispatcher.cpp
+
 #include "CommandDispatcher.h"
 #include "Runtime/Core/Public/HAL/Runnable.h"
 #include "Runtime/Core/Public/HAL/RunnableThread.h"

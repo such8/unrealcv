@@ -8,11 +8,6 @@
 #include "Runtime/Engine/Public/BufferVisualizationData.h"
 
 #include "CommandDispatcher.h"
-<<<<<<< HEAD:Source/UnrealCV/Private/PlayerViewMode.cpp
-#include "Async/Async.h"
-#include "Slate/SceneViewport.h"
-=======
->>>>>>> origin/4.25:Source/UnrealCV/Private/Controller/PlayerViewMode.cpp
 #include "ViewMode.h"
 #include "UnrealcvServer.h"
 #include "UnrealcvLog.h"

@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
-<<<<<<< HEAD:Source/UnrealCV/Public/CommandDispatcher.h
-#include "Internationalization/Regex.h"
-=======
+
 
 #include "CoreMinimal.h"
->>>>>>> origin/4.25:Source/UnrealCV/Public/Server/CommandDispatcher.h
 #include "ExecStatus.h"
 #include "Runtime/Core/Public/Internationalization/Regex.h"
 

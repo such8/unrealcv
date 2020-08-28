@@ -1,11 +1,7 @@
 #include "PluginHandler.h"
-<<<<<<< HEAD
 #include "Interfaces/IPluginManager.h"
-#include "UE4CVServer.h"
-=======
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Runtime/Projects/Public/Interfaces/IPluginManager.h"
->>>>>>> origin/4.25
 
 #include "UnrealcvServer.h"
 #include "UnrealcvShim.h"

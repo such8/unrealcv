@@ -1,17 +1,17 @@
 // Weichao Qiu @ 2016
 #pragma once
 
-<<<<<<< HEAD:Source/UnrealCV/Public/TcpServer.h
+
 #include "CoreUObject.h"
 #include "Networking.h"
 #include "NetworkMessage.h"
-=======
+
 #include "Runtime/Sockets/Public/Sockets.h"
 #include "Runtime/Networking/Public/Common/TcpListener.h"
 #include "Runtime/Networking/Public/Interfaces/IPv4/IPv4Endpoint.h"
 #include "Runtime/Core/Public/Serialization/ArrayReader.h"
 
->>>>>>> origin/4.25:Source/UnrealCV/Public/Server/TcpServer.h
+
 #include "TcpServer.generated.h"
 
 /**

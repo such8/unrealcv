@@ -412,27 +412,27 @@ void ADataCaptureActor::CaptureImageFromSensor(FString SensorName, UFusionCamSen
 void ADataCaptureActor::CaptureImage()
 {
 	// Iterate all cameras in the scene and capture images
-	for (ACamSensorActor* CameraActor : Sensors)
+	for (ACamSensorActor* CameraActor : _Sensors)
 	{
 		if (!IsValid(CameraActor)) continue;
 		
 		// Get all sensors in this camera actor
 		TArray<FString> SensorNames = CameraActor->GetSensorNames();
-		TArray<UFusionCamSensor*> Sensors = CameraActor->GetSensors();
+		TArray<UFusionCamSensor*> _Sensors = CameraActor->GetSensors();
 
-		if (SensorNames.Num() != Sensors.Num())
+		if (SensorNames.Num() != _Sensors.Num())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("The number of CameraNames and Cameras are mismatch."));
 			continue;
 		}
 
-		for (int i = 0; i < Sensors.Num(); i++)
+		for (int i = 0; i < _Sensors.Num(); i++)
 		{
-			this->CaptureImageFromSensor(SensorNames[i], Sensors[i]);
+			this->CaptureImageFromSensor(SensorNames[i], _Sensors[i]);
 		}
 
 	}
-	FString ScreenMessage = FString::Printf(TEXT("%d frames / %d images are captured from %d cameras"), FrameCounter, FrameCounter * Sensors.Num(), Sensors.Num());
+	FString ScreenMessage = FString::Printf(TEXT("%d frames / %d images are captured from %d cameras"), FrameCounter, FrameCounter * _Sensors.Num(), _Sensors.Num());
 	GEngine->AddOnScreenDebugMessage(-1, -1.0f, FColor::Green, *ScreenMessage);
 }
 
@@ -514,7 +514,7 @@ void ADataCaptureActor::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(ADataCaptureActor, bListSensors))
 	{
-		Sensors.Empty();
+		_Sensors.Empty();
 		// TArray<UObject *> SensorObjects;
 		// GetObjectsOfClass(AFusionCameraActor::StaticClass(), SensorObjects, false);
 		// for (UObject *Obj : SensorObjects)
@@ -524,7 +524,7 @@ void ADataCaptureActor::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 		for (TActorIterator<ACamSensorActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
 			ACamSensorActor* Actor = *ActorItr;
-			Sensors.Add(Actor);
+			_Sensors.Add(Actor);
 		}
 		bListSensors = false;
 	}
