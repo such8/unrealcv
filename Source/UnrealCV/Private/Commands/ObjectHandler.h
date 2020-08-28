@@ -1,39 +1,68 @@
+// Weichao Qiu @ 2016
 #pragma once
 #include "CommandDispatcher.h"
+#include "CommandHandler.h"
 
-class FObjectCommandHandler : public FCommandHandler
+/** 
+ * Handle vget/vset /object/ commands.
+ * The definition of object is any actor contains a MeshComponent in the runtime
+ * This includes StaticMesh, SkeletalMesh, ProceduralMesh (tree), Landscape, Foliage
+ * Object is different than actor, only actor contains mesh can be called as object
+*/
+class FObjectHandler : public FCommandHandler
 {
 public:
-	FObjectCommandHandler(FCommandDispatcher* InCommandDispatcher) : FCommandHandler(InCommandDispatcher)
-	{}
 	void RegisterCommands();
 
-	/** Get a list of all objects in the scene */
-	FExecStatus GetObjects(const TArray<FString>& Args);
-	/** Get the annotation color of an object (Notice: not the appearance color) */
-	FExecStatus GetObjectColor(const TArray<FString>& Args);
-	/** Set the annotation color of an object */
-	FExecStatus SetObjectColor(const TArray<FString>& Args);
-	/** Get the name of an object */
+private:
+	// See RegisterCommands in ObjectHandler.cpp for what each function is doing.
+	FExecStatus GetObjectList(const TArray<FString>& Args);
+
+	FExecStatus SpawnBox(const TArray<FString>& Args);
+
+	FExecStatus Spawn(const TArray<FString>& Args);
+
+	FExecStatus GetAnnotationColor(const TArray<FString>& Args);
+
+	FExecStatus SetAnnotationColor(const TArray<FString>& Args);
+
 	FExecStatus GetObjectName(const TArray<FString>& Args);
 
 	FExecStatus CurrentObjectHandler(const TArray<FString>& Args);
 
-	/** Get object location */
-	FExecStatus GetObjectLocation(const TArray<FString>& Args);
+	FExecStatus GetLocation(const TArray<FString>& Args);
 
-	/** Get object rotation */
-	FExecStatus GetObjectRotation(const TArray<FString>& Args);
+	FExecStatus GetRotation(const TArray<FString>& Args);
 
-	/** Set object location */
-	FExecStatus SetObjectLocation(const TArray<FString>& Args);
+	FExecStatus SetLocation(const TArray<FString>& Args);
 
-	/** Set object rotation */
-	FExecStatus SetObjectRotation(const TArray<FString>& Args);
+	FExecStatus SetRotation(const TArray<FString>& Args);
 
-	/** Show object */
-	FExecStatus ShowObject(const TArray<FString>& Args);
+	FExecStatus SetShow(const TArray<FString>& Args);
 
-	/** Hide object */
-	FExecStatus HideObject(const TArray<FString>& Args);
+	FExecStatus SetHide(const TArray<FString>& Args);
+
+	FExecStatus GetMobility(const TArray<FString>& Args);
+
+	FExecStatus GetObjectVertexLocation(const TArray<FString>& Args);
+
+	FExecStatus Destroy(const TArray<FString>& Args);
+
+	FExecStatus GetUClassName(const TArray<FString>& Args);
+
+	FExecStatus GetComponents(const TArray<FString>& Args);
+
+	FExecStatus SetName(const TArray<FString>& Args);
+
+#if WITH_EDITOR
+	FExecStatus SetActorLabel(const TArray<FString>& Args);
+
+	FExecStatus GetActorLabel(const TArray<FString>& Args);
+#endif
+
+	FExecStatus GetScale(const TArray<FString>& Args);
+
+	FExecStatus SetScale(const TArray<FString>& Args);
+
+	FExecStatus GetBounds(const TArray<FString>& Args);
 };

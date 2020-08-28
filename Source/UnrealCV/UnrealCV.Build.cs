@@ -16,15 +16,21 @@ public class UnrealcvBuildConfig
 		PublicIncludePaths.AddRange(
 			new string[]
 			{
-				EnginePath + "Source/Runtime/Launch/Resources",
-				// To get Unreal Engine minor version
 			}
 		);
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"UnrealCV/Private/Commands",
-				"UnrealCV/Private/libs", // For 3rd-party libs
+				"UnrealCV/Private",
+				"UnrealCV/Private/Actor",
+				"UnrealCV/Public/Actor",
+				"UnrealCV/Public/BPFunctionLib",
+				"UnrealCV/Public/Component",
+				"UnrealCV/Public/Controller",
+				"UnrealCV/Public/Sensor",
+				"UnrealCV/Public/Sensor/CameraSensor",
+				"UnrealCV/Public/Server",
+				"UnrealCV/Public/Utils"
 			}
 		);
 
@@ -40,6 +46,8 @@ public class UnrealcvBuildConfig
 			"ImageWrapper",
 			"CinematicCamera",
 			"Projects", // Support IPluginManager
+			"RHI", // Support low-level RHI operation
+			"Json",
 		});
 
 		EditorPrivateDependencyModuleNames.AddRange(
@@ -59,7 +67,6 @@ public class UnrealcvBuildConfig
 	}
 }
 
-#if WITH_FORWARDED_MODULE_RULES_CTOR
 namespace UnrealBuildTool.Rules
 {
 	public class UnrealCV: ModuleRules
@@ -68,7 +75,9 @@ namespace UnrealBuildTool.Rules
 		public UnrealCV(ReadOnlyTargetRules Target) : base(Target)
 		// 4.16 or better
 		{
-			bEnforceIWYU = false;
+			bEnforceIWYU = true;
+	  		bFasterWithoutUnity = true;
+			PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 			// This trick is from https://answers.unrealengine.com/questions/258689/how-to-include-private-header-files-of-other-modul.html
 			// string EnginePath = Path.GetFullPath(BuildConfigurationTarget.RelativeEnginePath);
@@ -91,26 +100,3 @@ namespace UnrealBuildTool.Rules
 	}
 }
 
-#else //4.15 or lower, for backward compatibility
-namespace UnrealBuildTool.Rules
-{
-	public class UnrealCV: ModuleRules
-	{
-		public UnrealCV(TargetInfo Target)
-		{
-			string EnginePath = Path.GetFullPath(BuildConfiguration.RelativeEnginePath);
-			UnrealcvBuildConfig BuildConfig = new UnrealcvBuildConfig(EnginePath);
-
-			PublicIncludePaths = BuildConfig.PublicIncludePaths;
-			PrivateIncludePaths = BuildConfig.PrivateIncludePaths;
-			PublicDependencyModuleNames = BuildConfig.PublicDependencyModuleNames;
-			DynamicallyLoadedModuleNames = BuildConfig.DynamicallyLoadedModuleNames;
-
-			if (UEBuildConfiguration.bBuildEditor == true)
-			{
-				PrivateDependencyModuleNames = BuildConfig.EditorPrivateDependencyModuleNames;
-			}
-		}
-	}
-}
-#endif

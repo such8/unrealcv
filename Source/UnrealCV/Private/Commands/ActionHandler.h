@@ -1,18 +1,21 @@
 #pragma once
 #include "CommandHandler.h"
+#include "Runtime/InputCore/Classes/InputCoreTypes.h"
 
-class FActionCommandHandler : public FCommandHandler
+class FActionHandler : public FCommandHandler
 {
 public:
-	FActionCommandHandler(FCommandDispatcher* InCommandDispatcher) : FCommandHandler(InCommandDispatcher)
-	{}
 	void RegisterCommands();
 
+private:
 	/** vset /action/game/pause */
 	FExecStatus PauseGame(const TArray<FString>& Args);
 
 	/** vset /action/game/resume */
 	FExecStatus ResumeGame(const TArray<FString>& Args);
+
+	/** vget /action/game/is_paused */
+	FExecStatus GetIsPaused(const TArray<FString>& Args); 
 
 	/** vset /action/game/level */
 	FExecStatus OpenLevel(const TArray<FString>& Args);
@@ -28,5 +31,6 @@ public:
 
 	/** vset /action/keyboard [key_name] [delta] */
 	FExecStatus Keyboard(const TArray<FString>& Args);
+
 	TFunction<void(void)> GetReleaseKey(FKey Key);
 };

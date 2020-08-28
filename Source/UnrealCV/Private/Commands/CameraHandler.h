@@ -1,73 +1,77 @@
 #pragma once
-#include "CommandHandler.h"
-#include "GTCaptureComponent.h"
 
-class FCameraCommandHandler : public FCommandHandler
+#include "CommandHandler.h"
+
+enum EFilenameType
+{
+	Png,
+	Npy,
+	Exr,
+	Bmp,
+	PngBinary,
+	NpyBinary,
+	BmpBinary,
+	Invalid, // Unrecognized filename type
+};
+
+/** Handle vget/vset /camera/ commands */
+class FCameraHandler : public FCommandHandler
 {
 public:
-	FCameraCommandHandler(FCommandDispatcher* InCommandDispatcher) : FCommandHandler(InCommandDispatcher)
-	{}
 	void RegisterCommands();
 
-	/** vget /camera/horizontal_fieldofview */
-	FExecStatus GetCameraHorizontalFieldOfView(const TArray<FString>& Args);
-	/** vset /camera/horizontal_fieldofview */
-	FExecStatus SetCameraHorizontalFieldOfView(const TArray<FString>& Args);
-	/** vget /camera/location */
+private:
+	class UFusionCamSensor* GetCamera(const TArray<FString>& Args, FExecStatus& Status);
+
+	FExecStatus GetCameraList(const TArray<FString>& Args);
+
+	FExecStatus SpawnCamera(const TArray<FString>& Args);
+
 	FExecStatus GetCameraLocation(const TArray<FString>& Args);
-	/** vset /camera/location */
-	FExecStatus	SetCameraLocation(const TArray<FString>& Args);
-	/** vset /camera/moveto */
-	FExecStatus	MoveTo(const TArray<FString>& Args);
-	/** vget /camera/[id]/rotation */
+
+	FExecStatus SetCameraLocation(const TArray<FString>& Args);
+
 	FExecStatus GetCameraRotation(const TArray<FString>& Args);
-	/** vset /camera/[id]/rotation */
-	FExecStatus	SetCameraRotation(const TArray<FString>& Args);
-  /** vget /camera/[id]/pose */
-  FExecStatus GetCameraPose(const TArray<FString>& Args);
-  /** vset /camera/[id]/pose */
-  FExecStatus	SetCameraPose(const TArray<FString>& Args);
 
-	/** vget /actor/rotation, follow the concept of actor in RL */
-	FExecStatus GetActorRotation(const TArray<FString>& Args);
-	/** vget /actor/location */
-	FExecStatus GetActorLocation(const TArray<FString>& Args);
+	FExecStatus SetCameraRotation(const TArray<FString>& Args);
 
-	/** vget /camera/view */
+	EFilenameType ParseFilenameType(const FString& Filename);
+
+	FExecStatus SerializeData(const TArray<FColor>& Data, int Width, int Height, const FString& Filename);
+
+	FExecStatus SerializeData(const TArray<FFloat16Color>& Data, int Width, int Height, const FString& Filename);
+
+	FExecStatus SerializeData(const TArray<float>& Data, int Width, int Height, const FString& Filename);
+
+	template<class T>
+	void SaveData(const TArray<T>& Data, int Width, int Height,
+		const TArray<FString>& Args, FExecStatus& Status);
+
+	FExecStatus GetCameraLit(const TArray<FString>& Args);
+
+	FExecStatus GetCameraDepth(const TArray<FString>& Args);
+
+	FExecStatus GetCameraNormal(const TArray<FString>& Args);
+
+	FExecStatus GetCameraObjMask(const TArray<FString>& Args);
+
+	FExecStatus MoveTo(const TArray<FString>& Args);
+
 	FExecStatus GetScreenshot(const TArray<FString>& Args);
 
-	/** Get camera image with a given mode, Get ViewMode data using SceneCaptureComponent, support multi-camera */
-	FExecStatus GetCameraViewMode(const TArray<FString>& Args);
+	FExecStatus SetPlayerViewMode(const TArray<FString>& Args);
 
-	/** Explicitly set ViewMode, then GetCameraViewMode */
-	FExecStatus GetLitViewMode(const TArray<FString>& Args);
+	FExecStatus GetPlayerViewMode(const TArray<FString>& Args);
 
-	/** Get camera project matrix */
-	FExecStatus GetCameraProjMatrix(const TArray<FString>& Args);
+	FExecStatus GetFOV(const TArray<FString>& Args);
 
-	/** Get HDR buffer visualization */
-	FExecStatus GetBuffer(const TArray<FString>& Args);
+	FExecStatus SetFOV(const TArray<FString>& Args);
 
-	/** Get HDR from the scene */
-	// FExecStatus GetCameraHDR(const TArray<FString>& Args);
-	// FExecStatus GetCameraDepth(const TArray<FString>& Args);
-	// FExecStatus GetCameraLit(const TArray<FString>& Args);
+	FExecStatus GetSize(const TArray<FString>& Args);
 
-	/** Get ViewMode data by switching to this viewmode then switch back, can not support multi-camera */
-	FExecStatus GetObjectInstanceMask(const TArray<FString>& Args);
+	FExecStatus SetSize(const TArray<FString>& Args);
 
-	/** Get raw binary image data instead of filename */
-	FExecStatus GetPngBinary(const TArray<FString>& Args, const FString& ViewMode);
+	FExecStatus SetProjectionType(const TArray<FString>& Args);
 
-	/** Get raw binary data as an uncompressed numpy array */
-	TArray<uint8> GetNpyBinaryUint8Data(const TArray<FString>& Args, const FString& ViewMode, int32 Channels);
-
-	/** Get response with raw binary data as an uncompressed numpy array */
-	FExecStatus GetNpyBinaryUint8(const TArray<FString>& Args, const FString& ViewMode, int32 Channels);
-
-	/** Get raw binary data as an uncompressed numpy array */
-	TArray<uint8> GetNpyBinaryFloat16Data(const TArray<FString>& Args, const FString& ViewMode, int32 Channels);
-
-	/** Get response with raw binary data as an uncompressed numpy array */
-	FExecStatus GetNpyBinaryFloat16(const TArray<FString>& Args, const FString& ViewMode, int32 Channels);
+	FExecStatus SetOrthoWidth(const TArray<FString>& Args);
 };

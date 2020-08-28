@@ -1,11 +1,10 @@
 #pragma once
 #include "CommandDispatcher.h"
+#include "CommandHandler.h"
 
-class FPluginCommandHandler : public FCommandHandler
+class FPluginHandler : public FCommandHandler
 {
 public:
-	FPluginCommandHandler(FCommandDispatcher* InCommandDispatcher) : FCommandHandler(InCommandDispatcher)
-	{}
 	void RegisterCommands();
 
 	FExecStatus GetPort(const TArray<FString>& Args);
@@ -19,4 +18,6 @@ public:
 
 	/** vget /scene/name */
 	FExecStatus GetSceneName(const TArray<FString>& Args);
+
+	FExecStatus GetLevelName(const TArray<FString>& Args);
 };

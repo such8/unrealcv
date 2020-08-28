@@ -24,3 +24,4 @@ namespace cnpy {
 	template<>
 	std::vector<char>& operator+=(std::vector<char>& lhs, const char* rhs);
 }
+

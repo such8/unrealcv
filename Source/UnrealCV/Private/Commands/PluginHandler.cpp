@@ -1,55 +1,40 @@
-#include "UnrealCVPrivate.h"
 #include "PluginHandler.h"
+<<<<<<< HEAD
 #include "Interfaces/IPluginManager.h"
 #include "UE4CVServer.h"
+=======
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "Runtime/Projects/Public/Interfaces/IPluginManager.h"
+>>>>>>> origin/4.25
 
-void FPluginCommandHandler::RegisterCommands()
-{
-	FDispatcherDelegate Cmd;
-	FString Help;
+#include "UnrealcvServer.h"
+#include "UnrealcvShim.h"
+#include "UnrealcvStats.h"
 
-	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginCommandHandler::GetUnrealCVStatus);
-	Help = "Get the status of UnrealCV plugin";
-	CommandDispatcher->BindCommand("vget /unrealcv/status", Cmd, Help);
+DECLARE_CYCLE_STAT(TEXT("FPluginHandler::GetUnrealCVStatus"), 
+	STAT_GetUnrealCVStatus, STATGROUP_UnrealCV);
 
-	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginCommandHandler::GetCommands);
-	Help = "List all available commands and their help message";
-	CommandDispatcher->BindCommand(TEXT("vget /unrealcv/help"), Cmd, Help);
-
-	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginCommandHandler::Echo);
-	Help = "[debug] Echo back all message, for debug";
-	CommandDispatcher->BindCommand(TEXT("vget /unrealcv/echo [str]"), Cmd, Help);
-
-	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginCommandHandler::GetVersion);
-	Help = "Get the version of UnrealCV, the format is v0.*.*";
-	CommandDispatcher->BindCommand(TEXT("vget /unrealcv/version"), Cmd, Help);
-
-	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginCommandHandler::GetSceneName);
-	Help = "Get the name of this scene, to make sure the annotation data is for this scene.";
-	CommandDispatcher->BindCommand(TEXT("vget /scene/name"), Cmd, Help);
-
-}
-
-FExecStatus FPluginCommandHandler::Echo(const TArray<FString>& Args)
+FExecStatus FPluginHandler::Echo(const TArray<FString>& Args)
 {
 	// Async version
 	FString Msg = Args[0];
-	FPromiseDelegate PromiseDelegate = FPromiseDelegate::CreateLambda([Msg]()
-	{
-		return FExecStatus::OK(Msg);
-	});
-	return FExecStatus::AsyncQuery(FPromise(PromiseDelegate));
+	// FPromiseDelegate PromiseDelegate = FPromiseDelegate::CreateLambda([Msg]()
+	// {
+	// 	return FExecStatus::OK(Msg);
+	// });
+	// return FExecStatus::AsyncQuery(FPromise(PromiseDelegate));
 
 	// Sync version
-	// return FExecStatus::OK(Args[0]);
+	return FExecStatus::OK(Args[0]);
 }
 
-FExecStatus FPluginCommandHandler::GetUnrealCVStatus(const TArray<FString>& Args)
+FExecStatus FPluginHandler::GetUnrealCVStatus(const TArray<FString>& Args)
 {
+	SCOPE_CYCLE_COUNTER(STAT_GetUnrealCVStatus);
 	FString Msg;
-	FUE4CVServer& Server = FUE4CVServer::Get(); // TODO: Can not use a copy constructor, need to disable copy constructor
+	FUnrealcvServer& Server = FUnrealcvServer::Get(); // TODO: Can not use a copy constructor, need to disable copy constructor
 
-	if (Server.NetworkManager->IsListening())
+	if (Server.TcpServer->IsListening())
 	{
 		Msg += "Is Listening\n";
 	}
@@ -57,7 +42,7 @@ FExecStatus FPluginCommandHandler::GetUnrealCVStatus(const TArray<FString>& Args
 	{
 		Msg += "Not Listening\n";
 	}
-	if (Server.NetworkManager->IsConnected())
+	if (Server.TcpServer->IsConnected())
 	{
 		Msg += "Client Connected\n";
 	}
@@ -65,14 +50,14 @@ FExecStatus FPluginCommandHandler::GetUnrealCVStatus(const TArray<FString>& Args
 	{
 		Msg += "No Client Connected\n";
 	}
-	Msg += FString::Printf(TEXT("%d\n"), Server.NetworkManager->PortNum);
+	Msg += FString::Printf(TEXT("%d\n"), Server.TcpServer->PortNum);
 	Msg += "Configuration\n";
-	Msg += FUE4CVServer::Get().Config.ToString();
+	Msg += FUnrealcvServer::Get().Config.ToString();
 	return FExecStatus::OK(Msg);
 }
 
 
-FExecStatus FPluginCommandHandler::GetCommands(const TArray<FString>& Args)
+FExecStatus FPluginHandler::GetCommands(const TArray<FString>& Args)
 {
 	FString Message;
 
@@ -89,7 +74,7 @@ FExecStatus FPluginCommandHandler::GetCommands(const TArray<FString>& Args)
 	return FExecStatus::OK(Message);
 }
 
-FExecStatus FPluginCommandHandler::GetVersion(const TArray<FString>& Args)
+FExecStatus FPluginHandler::GetVersion(const TArray<FString>& Args)
 {
 	TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin("UnrealCV");
 	if (!Plugin.IsValid())
@@ -106,9 +91,49 @@ FExecStatus FPluginCommandHandler::GetVersion(const TArray<FString>& Args)
 	}
 }
 
-
-FExecStatus FPluginCommandHandler::GetSceneName(const TArray<FString>& Args)
+FExecStatus FPluginHandler::GetSceneName(const TArray<FString>& Args)
 {
 	FString SceneName = GetProjectName();
 	return FExecStatus::OK(SceneName);
+}
+
+FExecStatus FPluginHandler::GetLevelName(const TArray<FString>& Args)
+{
+	FUnrealcvServer& Server = FUnrealcvServer::Get();
+	FString PrefixedMapName = Server.GetWorld()->GetMapName();	
+	FString Prefix = Server.GetWorld()->StreamingLevelsPrefix;
+	FString MapName = PrefixedMapName.Mid(Prefix.Len());
+	return FExecStatus::OK(MapName);
+}
+
+void FPluginHandler::RegisterCommands()
+{
+	FDispatcherDelegate Cmd;
+	FString Help;
+
+	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginHandler::GetUnrealCVStatus);
+	Help = "Get the status of UnrealCV plugin";
+	CommandDispatcher->BindCommand("vget /unrealcv/status", Cmd, Help);
+
+	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginHandler::GetCommands);
+	Help = "List all available commands and their help message";
+	CommandDispatcher->BindCommand(TEXT("vget /unrealcv/help"), Cmd, Help);
+
+	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginHandler::Echo);
+	Help = "[debug] Echo back all message, for debug";
+	CommandDispatcher->BindCommand(TEXT("vget /unrealcv/echo [str]"), Cmd, Help);
+
+	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginHandler::GetVersion);
+	Help = "Get the version of UnrealCV, the format is v0.*.*";
+	CommandDispatcher->BindCommand(TEXT("vget /unrealcv/version"), Cmd, Help);
+
+	Cmd = FDispatcherDelegate::CreateRaw(this, &FPluginHandler::GetSceneName);
+	Help = "Get the name of this scene, to make sure the annotation data is for this scene.";
+	CommandDispatcher->BindCommand(TEXT("vget /scene/name"), Cmd, Help);
+
+	CommandDispatcher->BindCommand(
+		"vget /level/name",
+		FDispatcherDelegate::CreateRaw(this, &FPluginHandler::GetLevelName),
+		"Get current level name"
+	);
 }
