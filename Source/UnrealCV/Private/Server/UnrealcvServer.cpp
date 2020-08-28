@@ -10,6 +10,7 @@
 #include "Commands/ActionHandler.h"
 #include "Commands/AliasHandler.h"
 #include "Commands/CameraHandler.h"
+#include "Commands/ProceduralLandscapeHandler.h"
 #include "WorldController.h"
 #include "UnrealcvLog.h"
 #include "UnrealcvStats.h"
@@ -80,6 +81,7 @@ void FUnrealcvServer::RegisterCommandHandlers()
 	CommandHandlers.Add(new FActionHandler());
 	CommandHandlers.Add(new FAliasHandler());
 	CommandHandlers.Add(new FCameraHandler());
+	CommandHandlers.Add(new FProceduralLandscapeHandler());
 	for (FCommandHandler* Handler : CommandHandlers)
 	{
 		Handler->CommandDispatcher = CommandDispatcher;
