@@ -418,17 +418,17 @@ void ADataCaptureActor::CaptureImage()
 		
 		// Get all sensors in this camera actor
 		TArray<FString> SensorNames = CameraActor->GetSensorNames();
-		TArray<UFusionCamSensor*> Sensors = CameraActor->GetSensors();
+		TArray<UFusionCamSensor*> _Sensors = CameraActor->GetSensors();
 
-		if (SensorNames.Num() != Sensors.Num())
+		if (SensorNames.Num() != _Sensors.Num())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("The number of CameraNames and Cameras are mismatch."));
 			continue;
 		}
 
-		for (int i = 0; i < Sensors.Num(); i++)
+		for (int i = 0; i < _Sensors.Num(); i++)
 		{
-			this->CaptureImageFromSensor(SensorNames[i], Sensors[i]);
+			this->CaptureImageFromSensor(SensorNames[i], _Sensors[i]);
 		}
 
 	}
